@@ -1,4 +1,4 @@
-## Interface: 11505
+## Interface: 11507
 ## Title: |cFF3071ACEquipmentManagerClassic|r |cFF22B14C[EMC]|r
 ## Version: 0.0.1
 ## Notes: GUI to the existing WoW ingame EquipmentManager API.
@@ -7,7 +7,10 @@
 embeds.xml
 Core\Core.lua
 Core\Options.lua
-EquipmentManagerClassic.lua
+Core\Utils.lua
+Core\SlashCommand.lua
+#Core\CallWoWAPI.lua
+Core\EquipmentManagerClassic.lua
+Core\Functions.lua
 GUI\GUI.lua
-GUI\Widgets.lua
-GUI\Template_EquipmentSetButton.lua
+GUI\Widget.lua

@@ -1,226 +1,182 @@
-local AceGUI = LibStub("AceGUI-3.0");
-local Call = EMC.CallAPI;
-local GUI = EMC.GUI;
+local Call = EMC.CallAPI
+local GUI = EMC.GUI
+local Inventory = EMC.Inventory
+local Widget = EMC.Widget
+local Utils = EMC.Utils
 
-function EMC:ShowGUI()
-    if self.guiWindow then
-        self.guiWindow:Show();
-        return;
-    end
-    
-    -- Main frame
-    local frame = AceGUI:Create("Window");
-    frame:SetLayout("Fill");
-    frame:SetTitle("EMC - EquipmentManagerClassic");
-    frame:SetWidth(500);
-    frame:SetHeight(300);
-    frame:EnableResize(false);
+function GUI:populateMenu(parent, updateContent)
+    local scrollFrame = CreateFrame("ScrollFrame", nil, parent, "BackdropTemplate")
+    --local scrollFrame = CreateFrame("ScrollFrame", nil, parent, "WoWScrollBoxList")
+    scrollFrame:SetSize(parent:GetWidth(), parent:GetHeight())
+    scrollFrame:SetPoint("CENTER")
 
-    -- Main container
-    local mainContainer = AceGUI:Create("SimpleGroup");
-    mainContainer:SetFullWidth(true);
-    mainContainer:SetFullHeight(true);
-    mainContainer:SetLayout("Flow");
-    frame:AddChild(mainContainer);
+    scrollFrame:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 }
+    })
+    scrollFrame:SetBackdropColor(0, 0, 0, 1)
 
-    -- Menu area
-    local menuArea = AceGUI:Create("SimpleGroup");
-    menuArea:SetFullHeight(true);
-    --menuArea:SetWidth(120);
-    menuArea:SetRelativeWidth(0.3);
-    menuArea:SetPoint("TOPLEFT", 0, 0);
-    menuArea:SetPoint("BOTTOMRIGHT", 0, 0);
-    menuArea:SetLayout("Flow");
-    mainContainer:AddChild(menuArea);
+    -- TODO: look into: https://warcraft.wiki.gg/wiki/Making_scrollable_frames
+    --local scrollBar = CreateFrame("EventFrame", nil, parent, "MinimalScrollBar")
+    --scrollBar:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT")
+    --scrollBar:SetPoint("BOTTOMLEFT", scrollFrame, "BOTTOMRIGHT")
 
-    -- Content area
-    local contentArea = AceGUI:Create("SimpleGroup");
-    contentArea:SetFullHeight(true);
-    contentArea:SetAutoAdjustHeight(false);
-    contentArea:SetRelativeWidth(0.7);
-    contentArea:SetPoint("BOTTOMRIGHT", 0, 0);
-    contentArea:SetPoint("TOPLEFT", menuArea.frame, "TOPRIGHT", 0, 0);
-    contentArea:SetLayout("Flow");
-    mainContainer:AddChild(contentArea);
+    local scrollContentFrame = CreateFrame("Frame", nil, scrollFrame)
+    scrollContentFrame:SetSize(parent:GetWidth() -10, 800)
+    scrollContentFrame:SetPoint("TOP")
+    scrollContentFrame:EnableMouse(true)
 
-    self.guiWindow = frame;
-    self.contentArea = contentArea;
-    self.menuArea = menuArea;
-
-    self:PopulateMenuArea();
-    self:PopulateContentArea();
-    self.guiWindow:DoLayout();
-end
-
-function EMC:PopulateMenuArea()
-    if self.menuArea == nil then
-        if self.debugMode then self:Print("Menu area is nil") end;
-        return;
-    end
-    local frame = AceGUI:Create("InlineGroup");
-    frame:SetTitle("Menu");
-    frame:SetFullWidth(true);
-    frame:SetFullHeight(true);
-    frame:SetLayout("Fill");
-    self.menuArea:AddChild(frame);
-
-    local scroll = AceGUI:Create("ScrollFrame");
-    scroll:SetLayout("Flow");
-    scroll:SetFullWidth(true);
-    frame:AddChild(scroll);
-
-    scroll:AddChild(GUI:CreateEquipmentSetButton(-1, function(_) 
-        self:OnCreateNewSet();
-    end));
-
-    local SetIDs = Call:GetEquipmentSetIDs();
-    for _, setID in pairs(SetIDs) do
-        scroll:AddChild(GUI:CreateEquipmentSetButton(setID, function(_) 
-            self:OnEquipmentSetSelected(setID);
-        end));
-    end
-end
-
-function EMC:OnCreateNewSet()
-    if self.debugMode then self:Print("OnCreateNewSet called") end;
-end
-
-function EMC:PopulateContentArea()
-    if self.contentArea == nil then
-        if self.debugMode then self:Print("Content area is nil") end;
-        return;
-    end
-    local frame = AceGUI:Create("InlineGroup");
-    frame:SetTitle("Content");
-    frame:SetFullWidth(true);
-    frame:SetFullHeight(true);
-    frame:SetLayout("Fill");
-    self.contentArea:AddChild(frame);
-end
-
-function EMC:ShowGUI2()
-    if self.guiWindow then
-        self.guiWindow:Show();
-        return;
-    end
-    -- Main frame
-    local frame = AceGUI:Create("Frame");
-    frame:SetTitle("EquipmentManagerClassic");
-    frame:SetStatusText("Manage your equipment sets");
-    frame:SetCallback("OnClose", function(widget) 
-        AceGUI:Release(widget);
-        self.guiWindow = nil;
-    end);
-    frame:SetLayout("Fill");
-    frame:SetWidth(600);
-    frame:SetHeight(400);
-
-    -- Main container
-    local mainContainer = AceGUI:Create("SimpleGroup");
-    mainContainer:SetFullWidth(true);
-    mainContainer:SetFullHeight(true);
-    mainContainer:SetLayout("Flow");
-    frame:AddChild(mainContainer);
-
-    -- Left panel
-    local leftPanel = AceGUI:Create("InlineGroup");
-    leftPanel:SetTitle("Equipment Sets");
-    leftPanel:SetLayout("List");
-    leftPanel:SetPoint("TOPLEFT", 10, -30);
-    leftPanel:SetPoint("BOTTOMLEFT", 10, 10);
-    leftPanel:SetRelativeWidth(0.3);
-    --leftPanel:SetWidth(200);
-    leftPanel:SetFullHeight(true);
-    mainContainer:AddChild(leftPanel);
+    local ids = C_EquipmentSet.GetEquipmentSetIDs()
+    local newSetButton = Widget:MenuButton(scrollContentFrame, nil, nil, function(self) 
+        updateContent(nil)
+    end)
+    newSetButton:SetPoint("TOP", scrollContentFrame, "TOP", 0, -10)
 
     
+    local lastAnchor = newSetButton
+    for _, setID in pairs(ids) do
+        local setName, iconFileID = C_EquipmentSet.GetEquipmentSetInfo(setID)
+        local btn = Widget:MenuButton(scrollContentFrame, setName, iconFileID, function(self) 
+            updateContent(setID)
+        end)
+        btn:SetPoint("TOP", lastAnchor, "BOTTOM", 0, -10)
+        lastAnchor = btn
+    end
+
+    scrollFrame:SetScrollChild(scrollContentFrame)
+end
+
+function GUI:populateContent(parent, setID)
+    EMC.Temp:Clear()
     
-    --- Add "New Set" button
-    local newSetButton = AceGUI:Create("InteractiveLabel");
-    newSetButton:SetText("New Set");
-    newSetButton:SetCallback("OnClick", function() 
-        EMC:OnCreateNewSet()
-    end);
-    newSetButton:SetImage(135769);
-    leftPanel:AddChild(newSetButton);
+    local itemIDs, label, dressUpModel, ignores, imageButton
+    if setID then
+        local getActionButton, deleteButton, macroEditBox, setName, macroText
+        setName = C_EquipmentSet.GetEquipmentSetInfo(setID)
+        itemIDs = C_EquipmentSet.GetItemIDs(setID)
+        label = Widget:Label(parent)
+        label:SetText(setName)
+        label:SetPoint("TOP")
 
-    --- Add equipment set buttons
-    local setButtons = self:CreateEquipmentSetButtons();
-    for _, btn in pairs(setButtons) do
-        leftPanel:AddChild(btn);
+        getActionButton = Widget:Button(parent, function() 
+            C_EquipmentSet.PickupEquipmentSet(setID)
+        end)
+        getActionButton:SetPoint("BOTTOMLEFT")
+        getActionButton:SetText("Get Action Button")
+
+        macroText = "/equipset " .. setName .. ""
+
+        macroEditBox = Widget:EditBox(parent, function() 
+            macroEditBox:SetText(macroText)
+        end)
+        macroEditBox:SetPoint("BOTTOMRIGHT")
+        macroEditBox:SetText(macroText)
+        macroEditBox:SetWidth(macroEditBox:GetWidth()*1.5)
+
+        deleteButton = Widget:Button(parent, function() 
+            C_EquipmentSet.DeleteEquipmentSet(setID)
+            GUI:Show()
+        end)
+
+        deleteButton:SetPoint("TOPRIGHT")
+        deleteButton:SetText("INSTANT DELETE!")
+    else
+        EMC.Flag.isEditingView = true
+        ignores = {}
+        local saveButton, editBox
+        editBox = Widget:EditBox(parent, function() 
+            saveButton:Click()    
+        end)
+        editBox:SetPoint("TOP")
+
+        saveButton = Widget:Button(parent, function() 
+            EMC.Temp.Ignores = {}
+            for slot, isIgnored in pairs(ignores) do
+                EMC.Temp.Ignores[slot] = isIgnored or false
+            end
+
+            EMC.Func:SaveSet(editBox:GetText())
+            GUI:Show()
+        end)
+        saveButton:SetPoint("TOPRIGHT")
+        saveButton:SetText("Save")
+
+        imageButton = Widget:ImageButton(parent, function() 
+            -- TODO Change icon for set
+            EMC:Print("Icon will be last unignored item")
+        end)
+        imageButton.frame:SetPoint("TOPLEFT")
+        imageButton:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
     end
+    -- model
+    dressUpModel = CreateFrame("DressUpModel", nil, parent)
+    dressUpModel:SetPoint("CENTER")
+    dressUpModel:SetSize(6*32, 8*32)
+    dressUpModel:SetUnit("player")
+    --dressUpModel:Undress()
 
-    -- Content area
-    local contentArea = AceGUI:Create("SimpleGroup");
-    contentArea:SetFullHeight(true);
-    --contentArea:SetWidth(380);
-    contentArea:SetRelativeWidth(0.7);
-    contentArea:SetPoint("TOPRIGHT", -10, -30);
-    contentArea:SetPoint("BOTTOMRIGHT", -10, 10);
-    contentArea:SetPoint("LEFT", leftPanel.frame, "RIGHT", 10, 0);
-    contentArea:SetLayout("Flow");
+    for slot = 1, 19 do
+        local itemID
+        itemID = (itemIDs and itemIDs[slot]) or (setID == nil and GetInventoryItemID("player", slot)) or nil
 
-    mainContainer:AddChild(contentArea);
+        local itemLink, itemTexture, itemWidget
+        if itemID == -1 or itemID == nil then
+            -- Ignored Slot (-1) and Empty Slot (nil)
+            itemTexture = Utils:GetPaperDollSlotTexture(slot)
+        else
+            -- Normal Slot
+            _, itemLink, _, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemID)
+            dressUpModel:UndressSlot(slot)
+            dressUpModel:TryOn(itemLink, Utils:HandSlotNameBySlot(slot))
+        end
 
-    local label = AceGUI:Create("Label");
-    label:SetText("Select an equipment set from the left.");
-    label:SetFullWidth(true);
-    label:SetFullHeight(true);
-    contentArea:AddChild(label);
+        itemWidget = Widget:ItemSlot(parent, itemTexture, itemLink)
+        itemWidget:SetPoint("CENTER", parent, "CENTER", Utils:ItemSlotMarginFromCenter(slot))
+        itemWidget:Ignore(itemID == -1)
+        itemWidget.tooltipAnchor = Utils:TooltipAnchorBySlot(slot)
 
-    if self.debugMode then 
-        EMC:Print("ContentArea width:", contentArea.frame:GetWidth());
-        EMC:Print("ContentArea height:", contentArea.frame:GetHeight());
-        EMC:Print("LeftPanel width:", leftPanel.frame:GetWidth());
-        EMC:Print("LeftPanel height:", leftPanel.frame:GetHeight());
-    end;
-
-    self.guiWindow = frame;
-    self.contentArea = contentArea;
+        if EMC.Flag.isEditingView then
+            itemWidget:SetScript("OnClick", function() 
+                itemWidget:Ignore(not itemWidget:IsIgnored())
+                ignores[slot] = itemWidget:IsIgnored()
+                -- TODO remove below when proper iconChange implemented
+                if not itemWidget:IsIgnored() then
+                    EMC.Temp.iconFileID = itemTexture
+                    imageButton:SetTexture(itemTexture)
+                end
+            end)
+        end
+    end
 end
 
-function EMC:OnCreateNewSet()
-    if self.debugMode then self:Print("OnCreateNewSet called") end;
+function GUI:Show()
+    self:Hide()
+    
+    local mainFrame = Widget:MainFrame()
+
+    local menuFrame = Widget:MenuFrame(mainFrame)
+    local contentFrame = Widget:ContentFrame(mainFrame)
+
+    self:populateMenu(menuFrame, function(setID)
+        EMC.Temp.editing = (setID == nil)
+        contentFrame:Hide()
+        contentFrame = Widget:ContentFrame(mainFrame)
+        self:populateContent(contentFrame, setID)
+    end)
 end
 
----@return list<frame>
-function EMC:CreateEquipmentSetButtons()
-    local buttons = {};
-    local setIDs = Call:GetEquipmentSetIDs();
-    for _, setID in pairs(setIDs) do
-        local name, icon = select(1, Call:GetEquipmentSetInfo(setID));
-        local button = AceGUI:Create("InteractiveLabel");
-        button:SetText(name);
-        button:SetImage(icon);
-        button:SetCallback("OnClick", function() 
-            self:OnEquipmentSetSelected(setID)
-        end);
-        table.insert(buttons, button);
+function GUI:Hide()
+    if _G["EquipmentManagerClassicFrame"] then 
+        _G["EquipmentManagerClassicFrame"]:Hide()
     end
-    return buttons;
 end
 
-function EMC:OnEquipmentSetSelected(setID)
-    if self.debugMode then self:Print("OnEquipmentSetSelected called with setID:", setID) end;
-    if self.contentArea == nil then
-        if self.debugMode then self:Print("Content area is nil") end;
-        return;
+function GUI:Clear()
+    for k, v in pairs(self) do
+        if type(v) ~= "function" then
+            self[k] = nil
+        end
     end
-    self.contentArea:ReleaseChildren();
-
-    local contentWidget = AceGUI:Create("Heading");
-    contentWidget:SetText("Set ID: " .. setID);
-    contentWidget:SetFullWidth(true);
-    self.contentArea:AddChild(contentWidget);
-
-    local contentWidget = AceGUI:Create("EquipmentSetContentArea");
-    if not contentWidget then
-        if self.debugMode then self:Print("Failed to create content widget") end;
-        return;
-    end
-    if self.debugMode then self:Print(table.concat(contentWidget, ", ")) end;
-    contentWidget:SetTitle("Set ID: " .. setID);
-    if self.debugMode then self:Print("Created content widget for setID:", setID) end;
-    self.contentArea:AddChild(contentWidget);
-    if self.debugMode then self:Print("Added content widget to content area") end;
 end
