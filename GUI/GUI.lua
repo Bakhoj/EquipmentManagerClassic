@@ -178,3 +178,11 @@ function GUI:Clear()
         end
     end
 end
+
+local paperButton = CreateFrame("Button", nil, PaperDollFrame, "UIPanelButtonTemplate")
+paperButton:SetSize(64, 32)
+paperButton:SetPoint("BOTTOMLEFT", 18, 80, 0, 0)
+paperButton:SetText("EMC")
+paperButton:SetScript("OnClick", function()
+    GUI:Show()
+end)
