@@ -1,6 +1,6 @@
 # EquipmentManagerClassic
 GUI for Blizzard's EquipmentManager in Classic.  
-Do you also have an annoying time on your Rank 14 warrior when you have to weapon swap to 2 weapons with the same name? Look no further! This is the addon you are looking for.  
+Do you also have an annoying time on your Rank 14 warrior when you have to weapon swap to 2 weapons with the same name? IN COMBAT!? Look no further! This is the addon you are looking for.  
 
 # How to use
 `/emc`
@@ -26,35 +26,12 @@ Make an addon that let's you view all your EquipmentSet, create them, edit, chan
 
 ### Functions  
   - [x] View saved EquipmentSets
-  - [ ] Create new EquipmentSet (with currently equipped geared, and choose which slots to ignore)
-  - [ ] Edit Icon for an EquipmentSet
-  - [ ] Get actionbar Button for EquipmentSet
-  - [ ] Get/show macro string for EquipmentSet
-  - [ ] (Optional) reate a WA that shows if specific EquipmentSet is equipped
-  - [ ] Consider getting inspiration from retail/classic Equipmentmanager for UI, screenshot below
+  - [x] Create new EquipmentSet (with currently equipped geared, and choose which slots to ignore)
+  - [x] Edit Icon for an EquipmentSet
+  - [x] Get actionbar Button for EquipmentSet
+  - [x] Get/show macro string for EquipmentSet
+  - [ ] (Optional) create a WA that shows if specific EquipmentSet is equipped
+  - [x] Consider getting inspiration from retail/classic Equipmentmanager for UI, screenshot below
 
   ![Screenshot of Equipment Manager in Mist of Pandaria](assets/EquipmentManagerMOP.png)
   ![Screenshot of Equipment Manager in Retail, about to change icon for the one in cursor](assets/EquipmentManagerRetailDragIcon.png)
-
-## Script examples:
-**Create/save an EquipmentSet that only contains weapons (ignore other slots):**  
-`/run local set = "Cleaver" local c = C_EquipmentSet c.CreateEquipmentSet(set) for i = 1,19 do if i ~= 16 and i ~= 17 then c.IgnoreSlotForSave(i) end end c.SaveEquipmentSet(c.GetEquipmentSetID(set))`  
-
-**Pickup the "button" for the EquipmentSet:**  
-`/run local set = "Cleaver" local c = C_EquipmentSet c.PickupEquipmentSet(c.GetEquipmentSetID(set))`  
-
-**Print items in the EquipmentSet with ID '0':**  
-`/run local items = C_EquipmentSet.GetItemIDs(0) for i = 1,19 do if items[i] then print(i, (GetItemInfo(items[i]))) end end`  
-
-**Add icon '236316' to EquipmentSet with ID '0' and give it name "Cleaver":**  
-`/run C_EquipmentSet.ModifyEquipmentSet(0, "Cleaver", 236316)`  
-
-**Print IDs of all EquipmentSets:**  
-`/run local c = C_EquipmentSet print(table.concat(c.GetEquipmentSetIDs(), ", "))`  
-
-**Print EquipmentSetInfo for EquipmentSet with ID '0':**  
-`/run print(C_EquipmentSet.GetEquipmentSetInfo(0))`  
-
-**Print EquipmentSetID for spec index '0' (I do not know if other related EquipmentSet+Spec functions work for Anniversary):**  
-`/run print(C_EquipmentSet.GetEquipmentSetForSpec(0))`  
-

@@ -1,6 +1,4 @@
-local Call = EMC.CallAPI
 local GUI = EMC.GUI
-local Inventory = EMC.Inventory
 local Widget = EMC.Widget
 local Utils = EMC.Utils
 
