@@ -28,7 +28,13 @@
         "SetDesaturation",
         "ColorPickerFrame",
         "OKAY",
-        "NOT_BOUND"
+        "NOT_BOUND",
+        "CreateDataProvider",
+        "CreateScrollBoxListLinearView",
+        "ScrollUtil",
+        "PaperDollFrame",
+        "CharacterTrinket1Slot",
+        "CharacterFrame"
     ],
     "Lua.type.weakUnionCheck": true
 }
