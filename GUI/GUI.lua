@@ -149,10 +149,17 @@ function GUI:populateContent(parent, setID)
     end
 end
 
-function GUI:Show()
+function GUI:Show(toPaperDollFrame)
     self:Hide()
     
     local mainFrame = Widget:MainFrame()
+    if toPaperDollFrame then
+        mainFrame:SetPoint("TOPLEFT", CharacterFrame.backdrop, "TOPRIGHT")
+        local _, height = CharacterFrame.backdrop:GetSize()
+        mainFrame:SetHeight(height)
+    end
+
+    self.paperButton.texture:SetDesaturated(true)
 
     local menuFrame = Widget:MenuFrame(mainFrame)
     local contentFrame = Widget:ContentFrame(mainFrame)
@@ -169,7 +176,17 @@ function GUI:Hide()
     if _G["EquipmentManagerClassicFrame"] then 
         _G["EquipmentManagerClassicFrame"]:Hide()
     end
+    self.paperButton.texture:SetDesaturated(false)
 end
+
+function GUI:IsShown()
+    if _G["EquipmentManagerClassicFrame"] then
+        return _G["EquipmentManagerClassicFrame"]:IsShown()
+    else
+        return false
+    end
+end
+
 
 function GUI:Clear()
     for k, v in pairs(self) do
@@ -179,10 +196,21 @@ function GUI:Clear()
     end
 end
 
-local paperButton = CreateFrame("Button", nil, PaperDollFrame, "UIPanelButtonTemplate")
-paperButton:SetSize(64, 32)
-paperButton:SetPoint("BOTTOMLEFT", 18, 80, 0, 0)
-paperButton:SetText("EMC")
+local paperButton = CreateFrame("Button", nil, CharacterTrinket1Slot, "UIPanelButtonTemplate")
+paperButton:SetSize(32, 32)
+paperButton:SetPoint("TOP", CharacterTrinket1Slot, "BOTTOM", 0, -4)
 paperButton:SetScript("OnClick", function()
-    GUI:Show()
+    if GUI:IsShown() then
+        GUI:Hide()
+    else
+        GUI:Show(true)
+    end
 end)
+
+paperButton.texture = paperButton:CreateTexture()
+paperButton.texture:SetAllPoints(paperButton)
+paperButton.texture:SetTexture(237174)
+--133886
+--134148
+
+GUI.paperButton = paperButton

@@ -4,6 +4,7 @@
 function EMC:OnInitialize()
     -- Slashcommands
     self:RegisterChatCommand("emc", "CLIHandler");
+    --EMC:Print(CharacterFrame:GetSize())
 end
 
 function EMC:OnEnable()
@@ -30,12 +31,14 @@ end
 function EMC:OnEquipmentSwapFinished(event, result, setID)
     if event ~= "EQUIPMENT_SWAP_FINISHED" then return end
     local name = C_EquipmentSet.GetEquipmentSetInfo(setID)
+    --@debug@
     if EMC.debugMode then
         if result then
         self:Print("Swapped to \"" .. tostring(name) .. "\" (" .. setID .. ")");
     else
         self:Print("Failed Swap to \"" .. tostring(name).. "\" (".. setID .. ")");
     end
+    --@end-debug@
     end
 end
 

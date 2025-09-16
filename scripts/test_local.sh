@@ -5,7 +5,7 @@ addon_name="EquipmentManagerClassic"
 current_dir=$(pwd)
 this_dir=$(dirname $0)
 files=("EquipmentManagerClassic.toc" "embeds.xml")
-included_dirs=("GUI" "Libs" "Core")
+included_dirs=("GUI" "libs" "core")
 
 mkdir -p "$target_dir/$addon_name"
 for file in "${files[@]}"; do cp -v "$current_dir/$file" "$target_dir/$addon_name/."; done

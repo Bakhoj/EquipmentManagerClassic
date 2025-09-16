@@ -5,12 +5,15 @@
 ## Author: Bakhoj
 
 embeds.xml
-Core\Core.lua
-Core\Options.lua
-Core\Utils.lua
-Core\SlashCommand.lua
-#Core\CallWoWAPI.lua
-Core\EquipmentManagerClassic.lua
-Core\Functions.lua
+core\Core.lua
+core\Options.lua
+core\Utils.lua
+core\SlashCommand.lua
+core\EquipmentManagerClassic.lua
+core\Functions.lua
 GUI\GUI.lua
 GUI\Widget.lua
+
+#@debug@
+
+#@end-debug@>
