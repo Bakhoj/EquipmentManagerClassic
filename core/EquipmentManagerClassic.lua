@@ -35,9 +35,9 @@ function EMC:OnEquipmentSwapFinished(event, result, setID)
     if EMC.debugMode then
         if result then
         self:Print("Swapped to \"" .. tostring(name) .. "\" (" .. setID .. ")");
-        end
-    else
+        else
         self:Print("Failed Swap to \"" .. tostring(name).. "\" (".. setID .. ")");
+        end
     end
     --@end-debug@
 end
