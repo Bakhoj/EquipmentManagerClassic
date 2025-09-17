@@ -12,6 +12,7 @@ ignore: # Files and directories beginning with a dot (such as .git) are automati
   - scripts
   - assets
   - "*.md"
+  - CHANGELOG-UNRELEASED.txt
 
 manual-changelog: CHANGELOG.txt
 license-output: LICENSE.txt
