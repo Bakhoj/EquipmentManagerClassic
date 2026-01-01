@@ -12,8 +12,8 @@ function EMC.Func:SaveSet(setName)
         end
     end
     if id ~= nil then
-        C_Timer.After(1.00, function() C_EquipmentSet.SaveEquipmentSet(id, iconFileID) end)
+        C_Timer.After(1.00, function() C_EquipmentSet.SaveEquipmentSet(id, tostring(iconFileID)) end)
     else
-        C_EquipmentSet.CreateEquipmentSet(setName, iconFileID)
+        C_EquipmentSet.CreateEquipmentSet(setName, tostring(iconFileID))
     end
 end
