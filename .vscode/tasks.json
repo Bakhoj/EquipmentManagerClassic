@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Local Test",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/test_local.sh",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+            "icon": {"id": "scrollbar-button-right"},
+            "problemMatcher": [],
+        },
+        {
+            "label": "Open Docs",
+            "type": "shell",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+            },
+            "icon": {"id": "browser"},
+            "problemMatcher": [],
+            "windows": {
+                "command": "cmd",
+                "args": ["/c", "start", "\"\"", "https://warcraft.wiki.gg/wiki/World_of_Warcraft_API"]
+            },
+            "linux": {
+                // "command": "xdg-open",
+                //"args": ["https://warcraft.wiki.gg/wiki/World_of_Warcraft_API"],
+                "command": "cmd.exe",
+                "args": ["/c", "start", "\"\"", "https://warcraft.wiki.gg/wiki/World_of_Warcraft_API"],
+            }
+        }
+    ]
+}
