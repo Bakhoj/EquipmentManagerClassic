@@ -78,3 +78,10 @@ end
 
 function Persistent:Clear()
 end
+
+local mainFrameName = "EquipmentManagerClassicFrame"
+EMC.mainFrameName = mainFrameName
+local menuDropdownName = "EquipmentManagerClassicFrame_UIDropdown"
+EMC.menuDropdownName = menuDropdownName
+local contentFrameName = "EquipmentManagerClassicFrame_ContentFrame"
+EMC.contentFrameName = contentFrameName

@@ -2,13 +2,11 @@ local Widget = EMC.Widget
 
 local ICON_SIZE = 32
 local ICON_BUTTON_SIZE = 24
-local WINDOW_WIDTH = 600
-local WINDOW_HEIGHT = 420
+local WINDOW_WIDTH = 360
+local WINDOW_HEIGHT = 440
 
-function Widget:MainFrame()
-    local frameName = "EquipmentManagerClassicFrame"
-    local frame = CreateFrame("Frame", frameName, UIParent, "BackdropTemplate")
-    _G[frameName] = frame
+function Widget:MainFrame()  
+    local frame = CreateFrame("Frame", EMC.mainFrameName, UIParent, "BackdropTemplate")
     tinsert(UISpecialFrames, frame:GetName())
 
     frame:SetSize(WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -27,12 +25,16 @@ function Widget:MainFrame()
     })
     frame:SetBackdropColor(0, 0, 0, 1)
     frame:SetFrameStrata("HIGH")
+
+
+    local closebutton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+    closebutton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, -6)
     return frame
 end
 
-function Widget:EditBox(parent, onEnter, onClick)
-    local editBox = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
-    editBox:SetSize(150, 40)
+function Widget:EditBox(parent, onEnter, onClick, name)
+    local editBox = CreateFrame("EditBox", name, parent, "InputBoxTemplate")
+    editBox:SetSize(124, 12)
     editBox:SetAutoFocus(false)
     editBox:SetTextInsets(4, 4, 4, 4)
     editBox:SetMaxLetters(30) -- TODO figure out max length for equipmentset name
@@ -115,10 +117,10 @@ function Widget:ItemSlot(parent, itemTexture, itemLink, onIgnore)
     return slotFrame
 end
 
-function Widget:Button(parent, onClick)
+function Widget:Button(parent, onClick, name)
     local BUTTON_WIDTH = 75
-    local BUTTON_HEIGHT = 30
-    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    local BUTTON_HEIGHT = 32
+    local button = CreateFrame("Button", name, parent, "UIPanelButtonTemplate")
     button:SetPoint("CENTER")
     button:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
     button:SetText("PLACEHOLDER")
@@ -141,56 +143,19 @@ function Widget:ImageButton(parent, onClick)
     return button
 end
 
-function Widget:MenuButton(parent, setName, iconFileID, onClick)
-    local BUTTON_WIDTH = 150
-    local BUTTON_HEIGHT = 40
-    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-    button:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-
-    local iconTexture = button:CreateTexture(nil, "ARTWORK")
-    iconTexture:SetTexture(iconFileID or "Interface\\Icons\\INV_Misc_QuestionMark")
-    iconTexture:SetSize(ICON_BUTTON_SIZE, ICON_BUTTON_SIZE)
-    iconTexture:SetPoint("LEFT", button, "LEFT", -5, 0)
-    button.icon = iconTexture
-    button:SetText("  " .. (setName or "NEW?"))
-
-    button:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-        if setName then 
-            GameTooltip:SetEquipmentSet(setName) 
-            GameTooltip:AddLine("EMC: Ignored might be incorrect", 0.7, 0.8, 0.2, true)
-        end
-        GameTooltip:Show()
-    end)
-
-    button:SetScript("OnLeave", function(self)
-        GameTooltip:Hide()
-    end)
-
-    button:SetScript("OnClick", onClick)
-
-    return button
-end
-
-function Widget:MenuFrame(parent)
-    local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    frame:SetSize((WINDOW_WIDTH * 0.4) -24, WINDOW_HEIGHT-24)
-    frame:SetPoint("LEFT", parent, "LEFT", 12, 0)
-
-    frame:SetBackdrop({
-        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true, tileSize = 16, edgeSize = 16,
-        insets = { left = 4, right = 4, top = 4, bottom = 4 }
-    })
-    frame:SetBackdropColor(0.1, 0.1, 0.1, 1)
-    return frame
-end
-
 function Widget:ContentFrame(parent)
-    local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    frame:SetSize(WINDOW_WIDTH * 0.6, WINDOW_HEIGHT-24)
+    if _G[EMC.contentFrameName] then
+        _G[EMC.contentFrameName]:Hide()
+        _G[EMC.contentFrameName] = nil
+    end
+    local frame = CreateFrame("Frame", EMC.contentFrameName, parent, "BackdropTemplate")
+    --frame:SetSize(WINDOW_WIDTH * 0.6, WINDOW_HEIGHT-24)
+    --frame:SetSize(WINDOW_WIDTH -24, WINDOW_HEIGHT-24)
+    frame:SetPoint("TOP", _G[EMC.menuDropdownName], "BOTTOM", 0, 4)
     frame:SetPoint("RIGHT", parent, "RIGHT", -12, 0)
+    frame:SetPoint("BOTTOM", parent, "BOTTOM", 0, 8)
+    frame:SetPoint("LEFT", parent, "LEFT", 12, 0)
+    --frame:SetPoint("LEFT", parent, "LEFT")
 
     frame:SetBackdrop({
         bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -199,5 +164,7 @@ function Widget:ContentFrame(parent)
         insets = { left = 4, right = 4, top = 4, bottom = 4 }
     })
     frame:SetBackdropColor(0.05, 0.05, 0.05, 1)
+
+    _G[EMC.contentFrameName] = frame
     return frame
 end
