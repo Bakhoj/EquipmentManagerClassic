@@ -1,6 +1,6 @@
-## Interface: 11507
+## Interface: 20505
 ## Title: |cFF3071ACEquipmentManagerClassic|r |cFF22B14C[EMC]|r
-## Version: 0.3
+## Version: 0.4
 ## Notes: GUI to the existing WoW ingame EquipmentManager API.
 ## Author: Bakhoj
 
